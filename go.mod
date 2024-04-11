@@ -1,4 +1,4 @@
-module github.com/gvcgo/gobuild
+module github.com/gvcgo/gobuilder
 
 go 1.22.2
 

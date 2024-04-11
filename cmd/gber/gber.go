@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/gvcgo/gobuild/cmd"
-	"github.com/gvcgo/gobuild/internal"
+	"github.com/gvcgo/gobuilder/cmd"
+	"github.com/gvcgo/gobuilder/internal"
 )
 
 func main() {
@@ -12,6 +12,7 @@ func main() {
 	if cwd != "" {
 		internal.SetCurrentWorkingDir(cwd)
 	}
+
 	cli := cmd.NewCli()
 	cli.Run()
 }

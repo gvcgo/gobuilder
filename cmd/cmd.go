@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/gvcgo/gobuild/internal"
+	"github.com/gvcgo/gobuilder/internal"
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/spf13/cobra"
 )
