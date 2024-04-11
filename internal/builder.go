@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 
@@ -17,6 +18,10 @@ import (
 )
 
 var projectDir string
+
+const (
+	winSuffix string = ".exe"
+)
 
 type GoBuilder struct {
 	ArchOSList     []string `json:"arch_os_list"`
@@ -140,7 +145,7 @@ func (g *GoBuilder) parseArgs() {
 	g.BuildArgs = args
 }
 
-func (g *GoBuilder) PackWithUPX(osInfo, archInfo, binDir string) {
+func (g *GoBuilder) PackWithUPX(osInfo, archInfo, binDir, bName string) {
 	if !IsUPXInstalled() {
 		gprint.PrintWarning("upx if not found!")
 		return
@@ -161,21 +166,16 @@ func (g *GoBuilder) PackWithUPX(osInfo, archInfo, binDir string) {
 		ok = false
 	}
 	if ok {
-		dList, _ := os.ReadDir(binDir)
-		if len(dList) == 1 {
-			bName := dList[0].Name()
-			binPath := filepath.Join(binDir, bName)
-			packedBinPath := filepath.Join(binDir, fmt.Sprintf("packed_%s", bName))
-			_, err := gutils.ExecuteSysCommand(true, binDir, "upx", "-o", packedBinPath, binPath)
-			if err != nil {
-				gprint.PrintError("Failed to pack binary: %+v", err)
-				os.RemoveAll(packedBinPath)
-				return
-			}
-
-			os.RemoveAll(binPath)
-			os.Rename(packedBinPath, binPath)
+		binPath := filepath.Join(binDir, bName)
+		packedBinPath := filepath.Join(binDir, fmt.Sprintf("packed_%s", bName))
+		_, err := gutils.ExecuteSysCommand(true, binDir, "upx", "-o", packedBinPath, binPath)
+		if err != nil {
+			gprint.PrintError("Failed to pack binary: %+v", err)
+			os.RemoveAll(packedBinPath)
+			return
 		}
+		os.RemoveAll(binPath)
+		os.Rename(packedBinPath, binPath)
 	}
 }
 
@@ -215,14 +215,11 @@ func (g *GoBuilder) zipDir(src, dst, binName string) (err error) {
 	return nil
 }
 
-func (g *GoBuilder) Zip(binDir string) {
-	dList, _ := os.ReadDir(binDir)
-	if len(dList) == 1 {
-		binName := dList[0].Name()
-		binPath := filepath.Join(binDir, binName)
-		zipPath := filepath.Join(filepath.Dir(binDir), fmt.Sprintf("%s.zip", filepath.Base(binDir)))
-		g.zipDir(binPath, zipPath, binName)
-	}
+func (g *GoBuilder) Zip(binDir, osInfo, archInfo, binName string) {
+	binPath := filepath.Join(binDir, binName)
+	dirPrefix := strings.Split(binName, ".")[0]
+	zipPath := filepath.Join(filepath.Dir(binDir), fmt.Sprintf("%s_%s-%s.zip", dirPrefix, osInfo, archInfo))
+	g.zipDir(binPath, zipPath, binName)
 }
 
 func (g *GoBuilder) Build() {
@@ -235,7 +232,23 @@ func (g *GoBuilder) Build() {
 	}
 }
 
-func (g *GoBuilder) prepareArgs(osInfo, archInfo string) ([]string, string) {
+func (g *GoBuilder) clearArgs(args []string) {
+	cmdReg := regexp.MustCompile(`(\$\([\w\W]+?\))`)
+	for idx, v := range args {
+		l := cmdReg.FindAllString(v, -1)
+		for _, cc := range l {
+			ccc := strings.TrimLeft(cc, "$(")
+			ccc = strings.TrimRight(ccc, ")")
+			bf, _ := gutils.ExecuteSysCommand(true, g.WorkDir, strings.Split(ccc, " ")...)
+			v = strings.ReplaceAll(v, cc, bf.String())
+		}
+		if len(l) > 0 {
+			args[idx] = v
+		}
+	}
+}
+
+func (g *GoBuilder) prepareArgs(osInfo, archInfo string) (args []string, targetDir, binName string) {
 	inputArgs := g.BuildArgs
 
 	if len(inputArgs) == 0 {
@@ -256,7 +269,6 @@ func (g *GoBuilder) prepareArgs(osInfo, archInfo string) ([]string, string) {
 		lastArg = g.WorkDir
 	}
 
-	var binName string
 	for idx, arg := range g.BuildArgs {
 		if arg == "-o" && len(g.BuildArgs) > idx+1 {
 			inputArgs = append(inputArgs[:idx], inputArgs[idx+2:]...)
@@ -269,19 +281,20 @@ func (g *GoBuilder) prepareArgs(osInfo, archInfo string) ([]string, string) {
 		binName = filepath.Base(lastArg)
 	}
 
-	targetDir := filepath.Join(g.ProjectDir(), "build", fmt.Sprintf("%s_%s-%s", binName, osInfo, archInfo))
+	targetDir = filepath.Join(g.ProjectDir(), "build", fmt.Sprintf("%s-%s", osInfo, archInfo))
+	os.MkdirAll(targetDir, os.ModePerm)
 
 	target := targetDir
 	if binName != "" {
-		if osInfo == gutils.Windows && !strings.HasSuffix(binName, ".exe") {
-			binName += ".exe"
+		if osInfo == gutils.Windows && !strings.HasSuffix(binName, winSuffix) {
+			binName += winSuffix
 		}
 		target = filepath.Join(targetDir, binName)
 	}
 
 	if len(inputArgs) == 1 {
 		inputArgs = append([]string{"-o", target}, inputArgs...)
-		return inputArgs, targetDir
+		return inputArgs, targetDir, binName
 	}
 
 	maxIndex := len(inputArgs) - 1
@@ -289,19 +302,19 @@ func (g *GoBuilder) prepareArgs(osInfo, archInfo string) ([]string, string) {
 	// incase overwrite
 	back := append([]string{}, inputArgs[maxIndex:]...)
 	inputArgs = append(append(front, "-o", target), back...)
-	return inputArgs, targetDir
+	return inputArgs, targetDir, binName
 }
 
 func (g *GoBuilder) build(osInfo, archInfo string) {
-	inputArgs, binDir := g.prepareArgs(osInfo, archInfo)
+	gprint.PrintInfo("Building for %s/%s...", osInfo, archInfo)
+	inputArgs, binDir, binName := g.prepareArgs(osInfo, archInfo)
 	args := append([]string{"go", "build"}, inputArgs...)
+	g.clearArgs(args)
 
-	fmt.Println(args)
-
-	if _, err := gutils.ExecuteSysCommand(false, g.WorkDir, args...); err != nil {
+	if _, err := gutils.ExecuteSysCommand(false, "", args...); err != nil {
 		gprint.PrintError("Failed to build binaries: %+v", err)
 		os.Exit(1)
 	}
-	g.PackWithUPX(osInfo, archInfo, binDir)
-	g.Zip(binDir)
+	g.PackWithUPX(osInfo, archInfo, binDir, binName)
+	g.Zip(binDir, osInfo, archInfo, binName)
 }

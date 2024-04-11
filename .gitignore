@@ -3,3 +3,6 @@ build/gber_*
 *.zip
 cmd/gber/gber
 cmd/gber/gber.exe
+build/darwin-*
+build/linux-*
+build/windows-*
