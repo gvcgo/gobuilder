@@ -1,0 +1,5 @@
+.DS_Store
+build/gber_*
+*.zip
+cmd/gber/gber
+cmd/gber/gber.exe
