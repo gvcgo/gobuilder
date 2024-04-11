@@ -12,22 +12,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	GroupID string = "gber"
-	GitTag  string
-	GitHash string
-)
+var GroupID string = "gber"
 
 type Cli struct {
 	rootCmd *cobra.Command
+	gitTag  string
+	gitHash string
 }
 
-func NewCli() (c *Cli) {
+func NewCli(gitTag, gitHash string) (c *Cli) {
 	c = &Cli{
 		rootCmd: &cobra.Command{
 			Short: "A enhanced go builder.",
 			Long:  "gber <subcommand> --flags <args>.",
 		},
+		gitTag:  gitTag,
+		gitHash: gitHash,
 	}
 	c.rootCmd.AddGroup(&cobra.Group{ID: GroupID, Title: "Command list: "})
 	c.initiate()
@@ -54,11 +54,11 @@ func (c *Cli) initiate() {
 		Short:   "Shows version info go gber.",
 		GroupID: GroupID,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(GitHash) > 7 {
-				GitHash = GitHash[:8]
+			if len(c.gitHash) > 7 {
+				c.gitHash = c.gitHash[:8]
 			}
-			if GitTag != "" && GitHash != "" {
-				fmt.Println(gprint.CyanStr("%s(%s)", GitTag, GitHash))
+			if c.gitTag != "" && c.gitHash != "" {
+				fmt.Println(gprint.CyanStr("%s(%s)", c.gitTag, c.gitHash))
 			}
 		},
 	})

@@ -245,12 +245,15 @@ func (g *GoBuilder) prepareArgs(osInfo, archInfo string) ([]string, string) {
 	// main func position.
 	lastArg := inputArgs[len(inputArgs)-1]
 
-	if !strings.Contains(lastArg, string([]rune{filepath.Separator})) && !strings.HasPrefix(lastArg, ".") {
+	if !strings.HasPrefix(lastArg, string([]rune{filepath.Separator})) && !strings.HasPrefix(lastArg, ".") {
 		inputArgs = append(inputArgs, g.WorkDir)
+		lastArg = g.WorkDir
 	} else if lastArg == "." && g.WorkDir != "" {
 		inputArgs[len(inputArgs)-1] = g.WorkDir
+		lastArg = g.WorkDir
 	} else if lastArg == ".." && g.WorkDir != "" {
 		inputArgs[len(inputArgs)-1] = filepath.Dir(g.WorkDir)
+		lastArg = g.WorkDir
 	}
 
 	var binName string
@@ -283,7 +286,8 @@ func (g *GoBuilder) prepareArgs(osInfo, archInfo string) ([]string, string) {
 
 	maxIndex := len(inputArgs) - 1
 	front := inputArgs[:maxIndex]
-	back := inputArgs[maxIndex:]
+	// incase overwrite
+	back := append([]string{}, inputArgs[maxIndex:]...)
 	inputArgs = append(append(front, "-o", target), back...)
 	return inputArgs, targetDir
 }
@@ -293,7 +297,6 @@ func (g *GoBuilder) build(osInfo, archInfo string) {
 	args := append([]string{"go", "build"}, inputArgs...)
 
 	fmt.Println(args)
-	fmt.Println(g.WorkDir)
 
 	if _, err := gutils.ExecuteSysCommand(false, g.WorkDir, args...); err != nil {
 		gprint.PrintError("Failed to build binaries: %+v", err)
