@@ -128,7 +128,7 @@ func (g *GoBuilder) saveBuilder(buildFile string) {
 
 func (g *GoBuilder) parseArgs() {
 	args := []string{}
-	if len(os.Args) > 2 && os.Args[1] == "build" {
+	if len(os.Args) > 2 {
 		args = os.Args[2:]
 	}
 	if len(args) == 0 {
