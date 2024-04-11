@@ -1,3 +1,4 @@
+[中文](https://github.com/gvcgo/gobuilder/blob/main/docs/README_CN.md) | [En](https://github.com/gvcgo/gobuilder)
 ### 何为gobuilder？
 
 gobuilder是一个用于编译go项目的工具。它功能上与go build类似，但是做了增强。能够同时编译到不同平台和架构，也不需要单独写脚本。
