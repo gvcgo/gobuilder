@@ -135,8 +135,6 @@ func (g *GoBuilder) parseArgs() {
 		return
 	}
 
-	g.WorkDir = GetCurrentWorkingDir()
-
 	for idx, v := range args {
 		v = strings.ReplaceAll(v, "#", "$")
 		args[idx] = v
@@ -249,7 +247,7 @@ func (g *GoBuilder) clearArgs(args []string) {
 }
 
 func (g *GoBuilder) prepareArgs(osInfo, archInfo string) (args []string, targetDir, binName string) {
-	inputArgs := g.BuildArgs
+	inputArgs := append([]string{}, g.BuildArgs...) // deepcopy
 
 	if len(inputArgs) == 0 {
 		inputArgs = append(inputArgs, g.WorkDir)
@@ -311,7 +309,7 @@ func (g *GoBuilder) build(osInfo, archInfo string) {
 	args := append([]string{"go", "build"}, inputArgs...)
 	g.clearArgs(args)
 
-	if _, err := gutils.ExecuteSysCommand(false, "", args...); err != nil {
+	if _, err := gutils.ExecuteSysCommand(false, g.WorkDir, args...); err != nil {
 		gprint.PrintError("Failed to build binaries: %+v", err)
 		os.Exit(1)
 	}
