@@ -148,6 +148,9 @@ func (g *GoBuilder) PackWithUPX(osInfo, archInfo, binDir, bName string) {
 		gprint.PrintWarning("upx if not found!")
 		return
 	}
+	if !g.EnableUPX {
+		return
+	}
 	var ok bool
 	if osInfo == gutils.Windows && archInfo == "amd64" {
 		ok = true
@@ -166,6 +169,7 @@ func (g *GoBuilder) PackWithUPX(osInfo, archInfo, binDir, bName string) {
 	if ok {
 		binPath := filepath.Join(binDir, bName)
 		packedBinPath := filepath.Join(binDir, fmt.Sprintf("packed_%s", bName))
+
 		_, err := gutils.ExecuteSysCommand(true, binDir, "upx", "-o", packedBinPath, binPath)
 		if err != nil {
 			gprint.PrintError("Failed to pack binary: %+v", err)
@@ -214,6 +218,9 @@ func (g *GoBuilder) zipDir(src, dst, binName string) (err error) {
 }
 
 func (g *GoBuilder) Zip(binDir, osInfo, archInfo, binName string) {
+	if !g.EnableCompress {
+		return
+	}
 	binPath := filepath.Join(binDir, binName)
 	dirPrefix := strings.Split(binName, ".")[0]
 	zipPath := filepath.Join(filepath.Dir(binDir), fmt.Sprintf("%s_%s-%s.zip", dirPrefix, osInfo, archInfo))

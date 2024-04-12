@@ -8,7 +8,7 @@
         "windows/arm64"
     ],
     "compress": true,
-    "upx": true,
+    "upx": false,
     "build_args": [
         "-ldflags",
         "-X main.GitTag=$(git describe --abbrev=0 --tags) -X main.GitHash=$(git show -s --format=%H)  -s -w",
