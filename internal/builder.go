@@ -148,30 +148,16 @@ func (g *GoBuilder) PackWithUPX(osInfo, archInfo, binDir, bName string) {
 		gprint.PrintWarning("upx if not found!")
 		return
 	}
-	if !g.EnableUPX {
+	// UPX cannot pack binaries for MacOS. Segment fault occurrs.
+	if !g.EnableUPX || osInfo == gutils.Darwin || (osInfo == gutils.Windows && archInfo != "amd64") {
 		return
 	}
 	fmt.Println(gprint.YellowStr("Packing with UPX..."))
-	var ok bool
-	if osInfo == gutils.Windows && archInfo == "amd64" {
-		ok = true
-	}
-	if osInfo == gutils.Linux {
-		switch archInfo {
-		case "amd64", "arm64":
-			ok = true
-		default:
-			ok = false
-		}
-	}
-	if osInfo == gutils.Darwin {
-		ok = false
-	}
-	if ok {
+	if g.EnableUPX {
 		binPath := filepath.Join(binDir, bName)
 		packedBinPath := filepath.Join(binDir, fmt.Sprintf("packed_%s", bName))
 
-		_, err := gutils.ExecuteSysCommand(true, binDir, "upx", "-o", packedBinPath, binPath)
+		_, err := gutils.ExecuteSysCommand(true, binDir, "upx", "-9", "-o", packedBinPath, binPath)
 		if err != nil {
 			gprint.PrintError("Failed to pack binary: %+v", err)
 			os.RemoveAll(packedBinPath)
@@ -223,6 +209,7 @@ func (g *GoBuilder) Zip(binDir, osInfo, archInfo, binName string) {
 		return
 	}
 	fmt.Println(gprint.YellowStr("Zipping binaries..."))
+
 	binPath := filepath.Join(binDir, binName)
 	dirPrefix := strings.Split(binName, ".")[0]
 	zipPath := filepath.Join(filepath.Dir(binDir), fmt.Sprintf("%s_%s-%s.zip", dirPrefix, osInfo, archInfo))
