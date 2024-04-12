@@ -1,6 +1,6 @@
 module github.com/gvcgo/gobuilder
 
-go 1.22.2
+go 1.18
 
 require (
 	github.com/gvcgo/goutils v0.9.5
