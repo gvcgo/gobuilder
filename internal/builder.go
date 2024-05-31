@@ -311,14 +311,14 @@ func (g *GoBuilder) build(osInfo, archInfo string) {
 	gprint.PrintInfo("Building for %s/%s...", osInfo, archInfo)
 	inputArgs, binDir, binName := g.prepareArgs(osInfo, archInfo)
 
-	compiler := "go"
+	compiler := []string{"go", "build"}
 	if g.EnableGarble && osInfo == gutils.Windows {
 		// use garble to obfuscate go binary.
 		CheckAndInstallGarble()
-		compiler = "garble"
+		compiler = []string{"garble", "-literals", "-tiny", "-seed=random", "build"}
 	}
 
-	args := append([]string{compiler, "build"}, inputArgs...)
+	args := append(compiler, inputArgs...)
 	g.clearArgs(args)
 
 	os.Setenv("GOOS", osInfo)
