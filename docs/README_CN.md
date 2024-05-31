@@ -7,6 +7,7 @@ gobuilder是一个用于编译go项目的工具。它功能上与go build类似�
 
 - 同时编译到go build支持的任何一个或者多个平台；
 - 使用UPX对binary进行压缩(可选)；
+- 使用garble对windows可执行文件进行混淆(可选)；
 - 自动对binary进行zip压缩打包(可选)；
 - 在go项目下的任何文件夹中，都可以一键编译该项目；
 - 记住编译参数，后续任何时间再编译时，无需要输入任何参数；
@@ -17,7 +18,7 @@ gobuilder是一个用于编译go项目的工具。它功能上与go build类似�
 - 安装
 
 ```bash
-go install github.com/gvcgo/gobuilder/cmd/gber@v0.0.8
+go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.0
 ```
 
 - 使用方法

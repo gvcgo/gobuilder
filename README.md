@@ -7,6 +7,7 @@ Gobuilder is a tool for building Go binaries. It is similar to the Go tool, but 
 
 - Builds binaries for any platform from go source code.
 - Packs binaries with UPX.
+- Obfuscate binaries with garble for windows.
 - Zip binaries automatically.
 - Builds binaries at anywhere in a go project.
 - Remembers the build operations forever.
@@ -17,7 +18,7 @@ Gobuilder is a tool for building Go binaries. It is similar to the Go tool, but 
 - Install
 
 ```bash
-go install github.com/gvcgo/gobuilder/cmd/gber@v0.0.9
+go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.0
 ```
 
 - Usage
