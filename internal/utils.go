@@ -94,7 +94,7 @@ func CheckAndInstallGarble() {
 	}
 }
 
-func CheckOsslsigncode() (ok bool) {
+func IsOsslsigncodeInstalled() (ok bool) {
 	binName := "osslsigncode"
 	if runtime.GOOS == gutils.Windows {
 		binName += ".exe"

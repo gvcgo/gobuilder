@@ -186,18 +186,20 @@ func (g *GoBuilder) SignWithOsslsigncode(osInfo, archInfo, binDir, binName strin
 	if osInfo != gutils.Windows {
 		return
 	}
-	if !CheckOsslsigncode() {
+	if !IsOsslsigncodeInstalled() {
 		return
 	}
 	if ok, _ := gutils.PathIsExist(g.PfxFilePath); !ok || g.PfxPassword == "" {
 		return
 	}
 
+	gprint.PrintInfo("Signing with osslsigncode...")
 	binPath := filepath.Join(binDir, binName)
 	signedBinPath := filepath.Join(binDir, fmt.Sprintf("signed_%s", binName))
 
 	/*
-		osslsigncode sign -addUnauthenticatedBlob -pkcs12 /home/moqsien/golang/src/gvcgo/version-manager/scripts/vmr.pfx
+		osslsigncode sign -addUnauthenticatedBlob -pkcs12
+		/home/moqsien/golang/src/gvcgo/version-manager/scripts/vmr.pfx
 		-pass Vmr2024 -n "GVC" -i https://github.com/gvcgo/ -in vmr.exe -out vmr_signed.exe
 	*/
 	_, err := gutils.ExecuteSysCommand(
@@ -380,6 +382,8 @@ func (g *GoBuilder) build(osInfo, archInfo string) {
 		os.Exit(1)
 	}
 	g.PackWithUPX(osInfo, archInfo, binDir, binName)
-	g.SignWithOsslsigncode(osInfo, archInfo, binDir, binName)
+	if g.EnableOsslsigncode {
+		g.SignWithOsslsigncode(osInfo, archInfo, binDir, binName)
+	}
 	g.Zip(binDir, osInfo, archInfo, binName)
 }

@@ -6,19 +6,33 @@ Gobuilder is a tool for building Go binaries. It is similar to the Go tool, but 
 ### Features
 
 - Builds binaries for any platform from go source code.
-- Packs binaries with UPX.
-- Obfuscate binaries with garble for windows.
+- Packs binaries with **UPX**.
+- Obfuscate binaries with **garble** for windows.
+- Sign windows exe with **osslsigncode**.
 - Zip binaries automatically.
 - Builds binaries at anywhere in a go project.
 - Remembers the build operations forever.
 - No script is needed.
+
+**Note**：if you wanna sign windows binaries with **osslsigncode**, you will need to manually add following fields to build/gbuild.json for gobuilder：
+
+```json
+// Example:
+{
+    "osslsigncode": true,
+    "pfx_file_path":"/home/moqsien/golang/src/gvcgo/version-manager/scripts/vmr.pfx",
+    "pfx_password":"Vmr2024",
+    "pfx_company":"GVC",
+    "pfx_website":"https://github.com/gvcgo/",
+}
+```
 
 ### How to use?
 
 - Install
 
 ```bash
-go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.2
+go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.3
 ```
 
 - Usage
