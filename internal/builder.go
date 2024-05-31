@@ -24,12 +24,17 @@ const (
 )
 
 type GoBuilder struct {
-	ArchOSList     []string `json:"arch_os_list"`
-	EnableCompress bool     `json:"compress"`
-	EnableUPX      bool     `json:"upx"`
-	EnableGarble   bool     `json:"garble"`
-	BuildArgs      []string `json:"build_args"`
-	WorkDir        string   `json:"work_dir"`
+	ArchOSList         []string `json:"arch_os_list"`
+	EnableCompress     bool     `json:"compress"`
+	EnableUPX          bool     `json:"upx"`
+	EnableGarble       bool     `json:"garble"`
+	EnableOsslsigncode bool     `json:"osslsigncode"`
+	PfxFilePath        string   `json:"pfx_file_path"`
+	PfxPassword        string   `json:"pfx_password"`
+	PfxCompany         string   `json:"pfx_company"`
+	PfxWebsite         string   `json:"pfx_website"`
+	BuildArgs          []string `json:"build_args"`
+	WorkDir            string   `json:"work_dir"`
 }
 
 func NewGoBuilder() (g *GoBuilder) {
@@ -174,6 +179,53 @@ func (g *GoBuilder) PackWithUPX(osInfo, archInfo, binDir, bName string) {
 		os.RemoveAll(binPath)
 		os.Rename(packedBinPath, binPath)
 	}
+}
+
+func (g *GoBuilder) SignWithOsslsigncode(osInfo, archInfo, binDir, binName string) {
+	// Only sign windows binaries.
+	if osInfo != gutils.Windows {
+		return
+	}
+	if !CheckOsslsigncode() {
+		return
+	}
+	if ok, _ := gutils.PathIsExist(g.PfxFilePath); !ok || g.PfxPassword == "" {
+		return
+	}
+
+	binPath := filepath.Join(binDir, binName)
+	signedBinPath := filepath.Join(binDir, fmt.Sprintf("signed_%s", binName))
+
+	/*
+		osslsigncode sign -addUnauthenticatedBlob -pkcs12 /home/moqsien/golang/src/gvcgo/version-manager/scripts/vmr.pfx
+		-pass Vmr2024 -n "GVC" -i https://github.com/gvcgo/ -in vmr.exe -out vmr_signed.exe
+	*/
+	_, err := gutils.ExecuteSysCommand(
+		true,
+		binDir,
+		"osslsigncode",
+		"sign",
+		"-addUnauthenticatedBlob",
+		"-pkcs12",
+		g.PfxFilePath,
+		"-pass",
+		g.PfxPassword,
+		"-n",
+		g.PfxCompany,
+		"-i",
+		g.PfxWebsite,
+		"-in",
+		binPath,
+		"-out",
+		signedBinPath,
+	)
+	if err != nil {
+		gprint.PrintError("Failed to sign binary: %+v", err)
+		os.RemoveAll(signedBinPath)
+		return
+	}
+	os.RemoveAll(binPath)
+	os.Rename(signedBinPath, binPath)
 }
 
 func (g *GoBuilder) zipDir(src, dst, binName string) (err error) {
@@ -328,5 +380,6 @@ func (g *GoBuilder) build(osInfo, archInfo string) {
 		os.Exit(1)
 	}
 	g.PackWithUPX(osInfo, archInfo, binDir, binName)
+	g.SignWithOsslsigncode(osInfo, archInfo, binDir, binName)
 	g.Zip(binDir, osInfo, archInfo, binName)
 }

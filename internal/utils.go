@@ -93,3 +93,12 @@ func CheckAndInstallGarble() {
 		gutils.ExecuteSysCommand(true, "", "go", "install", "mvdan.cc/garble@latest")
 	}
 }
+
+func CheckOsslsigncode() (ok bool) {
+	binName := "osslsigncode"
+	if runtime.GOOS == gutils.Windows {
+		binName += ".exe"
+	}
+	_, err := gutils.ExecuteSysCommand(true, "", binName, "--version")
+	return err == nil
+}
