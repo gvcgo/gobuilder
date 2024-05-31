@@ -27,6 +27,7 @@ type GoBuilder struct {
 	ArchOSList     []string `json:"arch_os_list"`
 	EnableCompress bool     `json:"compress"`
 	EnableUPX      bool     `json:"upx"`
+	EnableGarble   bool     `json:"garble"`
 	BuildArgs      []string `json:"build_args"`
 	WorkDir        string   `json:"work_dir"`
 }
@@ -115,6 +116,11 @@ func (g *GoBuilder) saveBuilder(buildFile string) {
 	cfm.Run()
 	g.EnableUPX = cfm.Result()
 
+	// Enable garble for windows.
+	cfm = confirm.NewConfirm(confirm.WithTitle("Use garble to obfuscate for windows binary or not?"))
+	cfm.Run()
+	g.EnableGarble = cfm.Result()
+
 	g.parseArgs()
 
 	g.WorkDir = GetCurrentWorkingDir()
@@ -144,14 +150,16 @@ func (g *GoBuilder) parseArgs() {
 }
 
 func (g *GoBuilder) PackWithUPX(osInfo, archInfo, binDir, bName string) {
-	if !IsUPXInstalled() {
-		gprint.PrintWarning("upx if not found!")
-		return
-	}
 	// UPX cannot pack binaries for MacOS. Segment fault occurrs.
 	if !g.EnableUPX || osInfo == gutils.Darwin || (osInfo == gutils.Windows && archInfo != "amd64") {
 		return
 	}
+
+	if !IsUPXInstalled() {
+		gprint.PrintWarning("upx if not found!")
+		return
+	}
+
 	fmt.Println(gprint.YellowStr("Packing with UPX..."))
 	if g.EnableUPX {
 		binPath := filepath.Join(binDir, bName)
@@ -302,7 +310,15 @@ func (g *GoBuilder) prepareArgs(osInfo, archInfo string) (args []string, targetD
 func (g *GoBuilder) build(osInfo, archInfo string) {
 	gprint.PrintInfo("Building for %s/%s...", osInfo, archInfo)
 	inputArgs, binDir, binName := g.prepareArgs(osInfo, archInfo)
-	args := append([]string{"go", "build"}, inputArgs...)
+
+	compiler := "go"
+	if g.EnableGarble && osInfo == gutils.Windows {
+		// use garble to obfuscate go binary.
+		CheckAndInstallGarble()
+		compiler = "garble"
+	}
+
+	args := append([]string{compiler, "build"}, inputArgs...)
 	g.clearArgs(args)
 
 	os.Setenv("GOOS", osInfo)

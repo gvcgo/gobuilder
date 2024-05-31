@@ -3,6 +3,7 @@ package internal
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/gvcgo/goutils/pkgs/gutils"
@@ -79,4 +80,16 @@ func SetCurrentWorkingDir(dPath string) {
 
 func GetCurrentWorkingDir() string {
 	return os.Getenv(CurrentWorkingDirEnv)
+}
+
+func CheckAndInstallGarble() {
+	garbleBin := "garble"
+	if runtime.GOOS == gutils.Windows {
+		garbleBin += ".exe"
+	}
+	_, err := gutils.ExecuteSysCommand(true, "", "garble", "version")
+	if err != nil {
+		// install garble
+		gutils.ExecuteSysCommand(true, "", "go", "install", "mvdan.cc/garble@latest")
+	}
 }
