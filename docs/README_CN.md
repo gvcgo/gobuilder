@@ -62,3 +62,9 @@ gber build -ldflags "-X main.GitTag=$(git describe --abbrev=0 --tags) -X main.Gi
 # replaced
 gber build -ldflags "-X main.GitTag=#(git describe --abbrev=0 --tags) -X main.GitHash=#(git show -s --format=%H)  -s -w" ./cmd/vmr
 ```
+
+### 项目依赖
+
+- [garble](https://github.com/burrowers/garble) (可选)
+- [osslsigncode](https://github.com/mtrojnar/osslsigncode) (可选)
+- [upx](https://github.com/upx/upx) (可选)
