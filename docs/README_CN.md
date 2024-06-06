@@ -27,24 +27,12 @@ gobuilder是一个用于编译go项目的工具。它功能上与go build类似�
 }
 ```
 
-### 安装
-
-```bash
-go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.3
-```
-
-### 快速开始
-
-```bash
-    
-`
-
 ### 如何使用？
 
 - 安装
 
 ```bash
-go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.2
+go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.3
 ```
 
 - 使用方法
