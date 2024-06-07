@@ -72,7 +72,7 @@ func (c *Cli) initiate() {
 			pd := internal.FindGoProjectDir(internal.GetCurrentWorkingDir())
 			buildDir := filepath.Join(pd, "build")
 			if ok, _ := gutils.PathIsExist(buildDir); ok {
-				cfm := confirm.NewConfirm(confirm.WithTitle(fmt.Sprintf("Do you really mean to clear %s?", buildDir)))
+				cfm := confirm.NewConfirmation(confirm.WithPrompt(fmt.Sprintf("Do you really mean to clear %s?", buildDir)))
 				cfm.Run()
 
 				if cfm.Result() {

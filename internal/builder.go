@@ -112,17 +112,17 @@ func (g *GoBuilder) saveBuilder(buildFile string) {
 	}
 
 	// Enable zip compress.
-	cfm := confirm.NewConfirm(confirm.WithTitle("To zip binaries or not?"))
+	cfm := confirm.NewConfirmation(confirm.WithPrompt("To zip binaries or not?"))
 	cfm.Run()
 	g.EnableCompress = cfm.Result()
 
 	// Enable upx.
-	cfm = confirm.NewConfirm(confirm.WithTitle("To pack binaries with UPX or not?"))
+	cfm = confirm.NewConfirmation(confirm.WithPrompt("To pack binaries with UPX or not?"))
 	cfm.Run()
 	g.EnableUPX = cfm.Result()
 
 	// Enable garble for windows.
-	cfm = confirm.NewConfirm(confirm.WithTitle("Use garble to obfuscate for windows binary or not?"))
+	cfm = confirm.NewConfirmation(confirm.WithPrompt("Use garble to obfuscate for windows binary or not?"))
 	cfm.Run()
 	g.EnableGarble = cfm.Result()
 
