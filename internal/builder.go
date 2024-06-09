@@ -17,6 +17,9 @@ import (
 	"github.com/gvcgo/goutils/pkgs/gutils"
 )
 
+/*
+TODO: support CGO
+*/
 var projectDir string
 
 const (
