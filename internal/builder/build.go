@@ -11,6 +11,11 @@ import (
 	"github.com/gvcgo/goutils/pkgs/gutils"
 )
 
+func IsGoCompilerInstalled() bool {
+	_, err := gutils.ExecuteSysCommand(true, "", "go", "version")
+	return err == nil
+}
+
 const (
 	ConfFileName = "build.json"
 )
@@ -85,7 +90,7 @@ func (b *Builder) build(osInfo, archInfo string) {
 
 	os.Setenv("GOOS", osInfo)
 	os.Setenv("GOARCH", archInfo)
-	os.Setenv("CGO_ENABLED", "0")
+	os.Setenv("CGO_ENABLED", "0") // disable CGO by default.
 
 	// CGO
 	if b.EnableCGO {
@@ -113,6 +118,11 @@ func (b *Builder) build(osInfo, archInfo string) {
 }
 
 func (b *Builder) Build() {
+	if !IsGoCompilerInstalled() {
+		gprint.PrintError("go compiler is not installed.")
+		return
+	}
+
 	if len(b.ArchOSList) == 0 {
 		return
 	}

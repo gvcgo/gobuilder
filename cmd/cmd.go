@@ -5,7 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gvcgo/gobuilder/internal"
+	"github.com/gvcgo/gobuilder/internal/builder"
+	"github.com/gvcgo/gobuilder/internal/utils"
 	"github.com/gvcgo/goutils/pkgs/gtea/confirm"
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/gutils"
@@ -43,7 +44,7 @@ func (c *Cli) initiate() {
 		GroupID:            GroupID,
 		DisableFlagParsing: true,
 		Run: func(cmd *cobra.Command, args []string) {
-			bd := internal.NewGoBuilder()
+			bd := builder.NewBuilder()
 			bd.Build()
 		},
 	})
@@ -69,7 +70,8 @@ func (c *Cli) initiate() {
 		Short:   "Clears the build directory.",
 		GroupID: GroupID,
 		Run: func(cmd *cobra.Command, args []string) {
-			pd := internal.FindGoProjectDir(internal.GetCurrentWorkingDir())
+			cwd, _ := os.Getwd()
+			pd := utils.FindGoProjectDir(cwd)
 			buildDir := filepath.Join(pd, "build")
 			if ok, _ := gutils.PathIsExist(buildDir); ok {
 				cfm := confirm.NewConfirmation(confirm.WithPrompt(fmt.Sprintf("Do you really mean to clear %s?", buildDir)))
