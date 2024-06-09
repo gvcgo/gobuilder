@@ -1,0 +1,24 @@
+{
+    "work_dir": "/home/moqsien/projects/go/src/gvcgo/gobuilder",
+    "arch_os_list": [
+        "darwin/amd64",
+        "darwin/arm64",
+        "linux/amd64",
+        "linux/arm64",
+        "windows/amd64",
+        "windows/arm64"
+    ],
+    "build_args": [
+        "-ldflags=-X main.GitTag=$(git describe --abbrev=0 --tags) -X main.GitHash=$(git show -s --format=%H)  -s -w",
+        "./cmd/gber"
+    ],
+    "enable_cgo": false,
+    "enable_zip": true,
+    "enable_garble": false,
+    "enable_upx": true,
+    "enable_osslsigncode": false,
+    "ossl_pfx_file_path": "",
+    "ossl_pfx_password": "",
+    "ossl_pfx_company": "",
+    "ossl_pfx_website": ""
+}

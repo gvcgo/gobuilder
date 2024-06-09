@@ -6,3 +6,4 @@ cmd/gber/gber.exe
 build/darwin-*
 build/linux-*
 build/windows-*
+/gber
