@@ -15,6 +15,8 @@ gobuilder是一个用于编译go项目的工具。它功能上与go build类似�
 - 记住编译参数，后续任何时间再编译时，无需要输入任何参数；
 - 无需编写任何脚本；
 
+**注意**: 建议使用[VMR](https://github.com/gvcgo/version-manager)安装**upx** 和 **go compiler**。 **osslsigncode** 的安装则需要手动编译。 **garble** 和 **xgo** 可以通过 **go install xxx**来安装。 **xgo docker镜像** 是 **ghcr.io/crazy-max/xgo** or **crazymax/xgo**。
+
 ### 如何使用？
 
 - 安装

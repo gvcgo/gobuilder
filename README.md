@@ -15,6 +15,10 @@ Gobuilder is a tool for building Go binaries. It is similar to the Go tool, but 
 - Remembers the build operations forever.
 - No script is needed.
 
+**Note**: You can install **upx** and **go compiler** using [VMR](https://github.com/gvcgo/version-manager). **osslsigncode** needs manuall compilation. **garble** and **xgo** can be installed using **go install xxx**.
+**xgo docker image** is available at **ghcr.io/crazy-max/xgo** or **crazymax/xgo**.
+
+
 ### How to use?
 
 - Install
