@@ -19,6 +19,11 @@ Gobuilder is a tool for building Go binaries. It is similar to the Go tool, but 
 **Note**: You can install **upx** and **go compiler** using [VMR](https://github.com/gvcgo/version-manager). **osslsigncode** needs manuall compilation. **garble** and **xgo** can be installed using **go install xxx**.
 **xgo docker image** is available at **ghcr.io/crazy-max/xgo** or **crazymax/xgo**.
 
+For self-signed certificate for Windows, see [here](https://stackoverflow.com/questions/84847/how-do-i-create-a-self-signed-certificate-for-code-signing-on-windows). 
+
+```bash
+New-SelfSignedCertificate -Type Custom -Subject "CN=<name>, O=<company name>, C=CN, L=<location>, S=<location>" -KeyUsage DigitalSignature -FriendlyName "MailTool" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}") -NotAfter (Get-Date).AddYears(10)
+```
 
 ### How to use?
 
