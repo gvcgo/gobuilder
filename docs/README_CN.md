@@ -6,7 +6,7 @@ gobuilder是一个用于编译go项目的工具。它功能上与go build类似�
 ### 功能特点
 
 - 同时编译到go build支持的任何一个或者多个平台；
-- 使用**xgo**对CGO进行交叉编译.
+- 使用**xgo**对CGO进行交叉编译(可选)；
 - 使用**UPX**对binary进行压缩(可选)；
 - 使用**garble**对windows可执行文件进行混淆(可选)；
 - 使用**osslsigncode**对windows可执行文件进行数字签名(可选)；
@@ -14,19 +14,6 @@ gobuilder是一个用于编译go项目的工具。它功能上与go build类似�
 - 在go项目下的任何文件夹中，都可以一键编译该项目；
 - 记住编译参数，后续任何时间再编译时，无需要输入任何参数；
 - 无需编写任何脚本；
-
-**注意**：在使用osslsigncode对windows可执行文件进行数字签名时，需要提前安装**osslsigncode**工具。另外，需要手动在gobuilder的配置文件build/gbuild.json中配置如下字段：
-
-```json
-// Example:
-{
-    "osslsigncode": true,
-    "pfx_file_path":"/home/moqsien/golang/src/gvcgo/version-manager/scripts/vmr.pfx",
-    "pfx_password":"Vmr2024",
-    "pfx_company":"GVC",
-    "pfx_website":"https://github.com/gvcgo/",
-}
-```
 
 ### 如何使用？
 
