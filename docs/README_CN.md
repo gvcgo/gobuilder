@@ -6,6 +6,7 @@ gobuilder是一个用于编译go项目的工具。它功能上与go build类似�
 ### 功能特点
 
 - 同时编译到go build支持的任何一个或者多个平台；
+- 使用**xgo**对CGO进行交叉编译.
 - 使用**UPX**对binary进行压缩(可选)；
 - 使用**garble**对windows可执行文件进行混淆(可选)；
 - 使用**osslsigncode**对windows可执行文件进行数字签名(可选)；
@@ -56,3 +57,6 @@ gber build -ldflags "-X main.GitTag=#(git describe --abbrev=0 --tags) -X main.Gi
 - [garble](https://github.com/burrowers/garble) (可选)
 - [osslsigncode](https://github.com/mtrojnar/osslsigncode) (可选)
 - [upx](https://github.com/upx/upx) (可选)
+- [xgo](https://github.com/crazy-max/xgo) (可选)
+
+**注意**：xgo的docker镜像，国内可以使用**ghcr.m.daocloud.io/crazy-max/xgo**加速安装。

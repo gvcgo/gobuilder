@@ -6,6 +6,7 @@ Gobuilder is a tool for building Go binaries. It is similar to the Go tool, but 
 ### Features
 
 - Builds binaries for any platform from go source code.
+- Cross-compilation for CGO using **xgo**.
 - Packs binaries with **UPX**.
 - Obfuscate binaries with **garble** for windows.
 - Sign windows exe with **osslsigncode**.
@@ -55,3 +56,4 @@ gber build -ldflags "-X main.GitTag=#(git describe --abbrev=0 --tags) -X main.Gi
 - [garble](https://github.com/burrowers/garble) (optional)
 - [osslsigncode](https://github.com/mtrojnar/osslsigncode) (optional)
 - [upx](https://github.com/upx/upx) (optional)
+- [xgo](https://github.com/crazy-max/xgo) (optional)
