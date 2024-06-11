@@ -53,6 +53,7 @@ gber build -ldflags "-X main.GitTag=#(git describe --abbrev=0 --tags) -X main.Gi
 
 ### Dependencies
 
+- [go compiler](https://go.dev/dl/) (required)
 - [garble](https://github.com/burrowers/garble) (optional)
 - [osslsigncode](https://github.com/mtrojnar/osslsigncode) (optional)
 - [upx](https://github.com/upx/upx) (optional)

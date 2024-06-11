@@ -54,6 +54,7 @@ gber build -ldflags "-X main.GitTag=#(git describe --abbrev=0 --tags) -X main.Gi
 
 ### 项目依赖
 
+- [go compiler](https://go.dev/dl/) (必需)
 - [garble](https://github.com/burrowers/garble) (可选)
 - [osslsigncode](https://github.com/mtrojnar/osslsigncode) (可选)
 - [upx](https://github.com/upx/upx) (可选)
