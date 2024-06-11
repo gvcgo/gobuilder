@@ -25,7 +25,7 @@ Gobuilder is a tool for building Go binaries. It is similar to the Go tool, but 
 - Install
 
 ```bash
-go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.3
+go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.5
 ```
 
 - Usage

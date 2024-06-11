@@ -23,7 +23,7 @@ gobuilder是一个用于编译go项目的工具。它功能上与go build类似�
 - 安装
 
 ```bash
-go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.3
+go install github.com/gvcgo/gobuilder/cmd/gber@v0.1.5
 ```
 
 - 使用方法
