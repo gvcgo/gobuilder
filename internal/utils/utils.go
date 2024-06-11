@@ -59,3 +59,7 @@ func GetOtherArchOS() []string {
 	}
 	return r
 }
+
+func GetPathSeparator() string {
+	return string([]rune{filepath.Separator})
+}

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 
+	"github.com/gvcgo/gobuilder/internal/utils"
 	"github.com/gvcgo/goutils/pkgs/gtea/gprint"
 	"github.com/gvcgo/goutils/pkgs/gutils"
 )
@@ -56,53 +56,62 @@ func (b *Builder) UseXGO(osInfo, archInfo, binDir, binName string, oldArgs []str
 	goProxy := FindGoProxy()
 
 	var (
-		ldflags string
-		vv      string
-		xx      string
+		ldflags  string
+		vv       string
+		xx       string
+		trimpath string
 	)
 
 	for idx, arg := range oldArgs {
 		if arg == "-ldflags" && idx < len(oldArgs)-1 {
-			ldflags = fmt.Sprintf("-ldflags=%s", oldArgs[idx+1])
+			ldflags = oldArgs[idx+1]
 		} else if strings.HasPrefix(arg, "-ldflags=") {
-			ldflags = arg
+			sList := strings.Split(arg, "=")
+			ldflags = sList[1]
 		} else if arg == "-v" {
 			vv = "-v"
 		} else if arg == "-x" {
 			xx = "-x"
+		} else if arg == "-trimpath" {
+			trimpath = "-trimpath"
 		}
 	}
 
-	pkgDir := strings.ReplaceAll(oldArgs[len(oldArgs)-1], b.WorkDir, "")
+	importDir := strings.ReplaceAll(oldArgs[len(oldArgs)-1], b.WorkDir, "")
+	if importDir == "" {
+		importDir = "."
+	}
 
 	targets := fmt.Sprintf("%s/%s", osInfo, archInfo)
 
-	newArgs = append(newArgs, "xgo")
+	newArgs = append(newArgs, "xgo", "-race")
 	if b.XGoDeps != "" {
-		newArgs = append(newArgs, fmt.Sprintf("-deps=%s", b.XGoDeps))
+		newArgs = append(newArgs, fmt.Sprintf(`-deps=%s`, b.XGoDeps))
 	}
 	if b.XGoDepsArgs != "" {
-		newArgs = append(newArgs, fmt.Sprintf("-depsargs=%s", b.XGoDepsArgs))
+		newArgs = append(newArgs, fmt.Sprintf(`-depsargs=%s`, b.XGoDepsArgs))
 	}
 
 	destDir := strings.ReplaceAll(binDir, b.WorkDir, "")
-	newArgs = append(newArgs, fmt.Sprintf("-dest=%s", destDir))
+	newArgs = append(newArgs, fmt.Sprintf(`-dest=%s`, strings.TrimPrefix(destDir, utils.GetPathSeparator())))
 
-	newArgs = append(newArgs, fmt.Sprintf("-docker-image=%s", imgName))
+	newArgs = append(newArgs, fmt.Sprintf(`-docker-image=%s`, imgName))
 
 	if goProxy != "" {
-		newArgs = append(newArgs, fmt.Sprintf("-goproxy=%s", goProxy))
+		newArgs = append(newArgs, fmt.Sprintf(`-goproxy=%s`, goProxy))
 	}
 
 	if ldflags != "" {
-		newArgs = append(newArgs, fmt.Sprintf("-ldflags=%s", ldflags))
+		newArgs = append(newArgs, fmt.Sprintf(`-ldflags=%s`, ldflags))
 	}
 
-	newArgs = append(newArgs, fmt.Sprintf(" -out=%s", binName))
+	newArgs = append(newArgs, fmt.Sprintf(`-out=%s`, binName))
 
-	newArgs = append(newArgs, fmt.Sprintf("-pkg=%s", pkgDir))
+	newArgs = append(newArgs, fmt.Sprintf(`-targets=%s`, targets))
 
-	newArgs = append(newArgs, fmt.Sprintf("-targets=%s", targets))
+	if trimpath != "" {
+		newArgs = append(newArgs, trimpath)
+	}
 
 	if vv != "" {
 		newArgs = append(newArgs, vv)
@@ -112,6 +121,9 @@ func (b *Builder) UseXGO(osInfo, archInfo, binDir, binName string, oldArgs []str
 		newArgs = append(newArgs, xx)
 	}
 
+	newArgs = append(newArgs, importDir)
+
+	fmt.Println(newArgs)
 	return
 }
 
@@ -124,7 +136,7 @@ func (b *Builder) FixBinaryName(osInfo, archInfo, binDir, binName string) {
 			os.Rename(binPath, newBinPath)
 		}
 	}
-	if runtime.GOOS != gutils.Windows {
+	if osInfo != gutils.Windows {
 		user := os.Getenv("USER")
 		if user == "" {
 			return

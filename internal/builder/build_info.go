@@ -31,7 +31,7 @@ func (b *Builder) saveBuilder(buildConfPath string) {
 		os.Exit(1)
 	}
 
-	// Enable CGO or not.
+	// Enable CGO with xgo or not.
 	b.enableCGO()
 
 	// Enable zip after compilation.
@@ -92,7 +92,7 @@ func (b *Builder) chooseArchOs() {
 }
 
 func (b *Builder) enableCGO() {
-	cfm := confirm.NewConfirmation(confirm.WithPrompt("To enable CGO or not?"))
+	cfm := confirm.NewConfirmation(confirm.WithPrompt("To enable CGO with [xgo] or not?"))
 	cfm.Run()
 	b.EnableCGoWithXGo = cfm.Result()
 }
