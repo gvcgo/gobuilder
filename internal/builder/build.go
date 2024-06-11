@@ -24,7 +24,10 @@ type Builder struct {
 	WorkDir            string   `json:"work_dir"`
 	ArchOSList         []string `json:"arch_os_list"`
 	BuildArgs          []string `json:"build_args"`
-	EnableCGO          bool     `json:"enable_cgo"`
+	EnableCGoWithXGo   bool     `json:"enable_cgo_with_xgo"`
+	XGoImage           string   `json:"xgo_image"`
+	XGoDeps            string   `json:"xgo_deps"`
+	XGoDepsArgs        string   `json:"xgo_deps_args"`
 	EnableZip          bool     `json:"enable_zip"`
 	EnableGarble       bool     `json:"enable_garble"`
 	EnableUPX          bool     `json:"enable_upx"`
@@ -92,19 +95,18 @@ func (b *Builder) build(osInfo, archInfo string) {
 	os.Setenv("GOARCH", archInfo)
 	os.Setenv("CGO_ENABLED", "0") // disable CGO by default.
 
-	// CGO
-	if b.EnableCGO {
-		if !SupportedArchOSForCGO(osInfo, archInfo) {
-			gprint.PrintError("CGO is not supported for %s/%s", osInfo, archInfo)
-			return
-		}
-		b.SetZigForCGO(osInfo, archInfo, binDir, binName)
-		args = b.modifyBuildArgsForCGO(args)
+	// CGO with xgo
+	if b.EnableCGoWithXGo {
+		args = b.UseXGO(osInfo, archInfo, binDir, binName, args)
 	}
 
 	if _, err := gutils.ExecuteSysCommand(false, b.WorkDir, args...); err != nil {
 		gprint.PrintError("Failed to build binaries: %+v", err)
 		os.Exit(1)
+	}
+
+	if b.EnableCGoWithXGo {
+		b.FixBinaryName(osInfo, archInfo, binDir, binName)
 	}
 
 	// UPX

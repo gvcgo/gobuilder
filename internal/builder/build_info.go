@@ -94,7 +94,7 @@ func (b *Builder) chooseArchOs() {
 func (b *Builder) enableCGO() {
 	cfm := confirm.NewConfirmation(confirm.WithPrompt("To enable CGO or not?"))
 	cfm.Run()
-	b.EnableCGO = cfm.Result()
+	b.EnableCGoWithXGo = cfm.Result()
 }
 
 func (b *Builder) enableZip() {
