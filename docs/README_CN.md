@@ -48,6 +48,12 @@ gber build -ldflags "-X main.GitTag=$(git describe --abbrev=0 --tags) -X main.Gi
 gber build -ldflags "-X main.GitTag=#(git describe --abbrev=0 --tags) -X main.GitHash=#(git show -s --format=%H)  -s -w" ./cmd/vmr
 ```
 
+### 演示
+
+一键编译 [vmr](https://github.com/gvcgo/version-manager)到不同平台。
+
+![vmr_compilation](https://cdn.jsdelivr.net/gh/moqsien/conf_backup@main/gber.gif)
+
 ### 项目依赖
 
 - [go compiler](https://go.dev/dl/) (必需)
